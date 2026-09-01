@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rifas Premium - Escolha seus Números</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f6f9; padding-bottom: 100px; } /* Espaço para o footer fixo */
+        
+        /* Hero Section (Topo) */
+        .hero { position: relative; height: 250px; overflow: hidden; }
+        .hero img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-overlay { 
+            position: absolute; bottom: 0; left: 0; right: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); 
+            padding: 20px; color: white; 
+        }
+        .edition-tag { background: #003366; padding: 4px 10px; border-radius: 4px; font-size: 12px; display: inline-block; margin-bottom: 8px; }
+        .prize-list { font-size: 13px; opacity: 0.9; line-height: 1.4; margin-top: 5px; }
+
+        /* Área de Seleção */
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .price-box { text-align: center; margin-bottom: 20px; font-size: 18px; color: #333; }
+        .price-highlight { background: #003366; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-left: 10px; }
+
+        /* Grade de Pacotes */
+        .packages-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .pkg-btn { 
+            background: #003366; color: white; border: none; padding: 15px 5px; 
+            border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+        }
+        .pkg-btn.popular { background: #28a745; position: relative; }
+        .pkg-btn.popular::after { content: 'POPULAR'; position: absolute; top: -8px; right: 5px; background: #ffc107; color: black; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .pkg-btn span:first-child { font-size: 20px; font-weight: bold; }
+        .pkg-btn span:last-child { font-size: 11px; opacity: 0.8; margin-top: 4px; }
+        .pkg-btn:active { transform: scale(0.95); }
+
+        /* Contador Manual */
+        .manual-counter { display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
+        .counter-btn { background: none; border: none; font-size: 24px; color: #003366; padding: 0 20px; cursor: pointer; }
+        .counter-val { font-size: 20px; font-weight: bold; width: 50px; text-align: center; }
+
+        /* Footer Fixo (Checkout) */
+        .sticky-footer { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: white; 
+            padding: 15px 20px; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); 
+            display: flex; align-items: center; justify-content: space-between; z-index: 100;
+        }
+        .checkout-btn { 
+            background: #28a745; color: white; border: none; padding: 15px; 
+            border-radius: 8px; font-size: 16px; font-weight: bold; flex-grow: 1; margin-right: 15px; cursor: pointer;
+        }
+        .total-info { text-align: right; min-width: 80px; }
+        .total-price { font-size: 18px; font-weight: bold; color: #333; }
+        .unit-price { font-size: 12px; color: #666; }
+
+        /* Modal de Regulamentos (Simples) */
+        .rules-toggle { text-align: center; margin: 20px 0; color: #003366; cursor: pointer; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <div class="hero">
+        <img id="heroImg" src="https://via.placeholder.com/600x300/003366/ffffff?text=IMAGEM+DO+PREMIO" alt="Prêmio">
+        <div class="hero-overlay">
+            <span class="edition-tag" id="editionTag">EDIÇÃO 001</span>
+            <h2 id="rifaTitle">TÍTULO DA RIFA</h2>
+            <p class="prize-list" id="prizeList">Lista de prêmios aparecerá aqui...</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="price-box">
+            Por apenas <span class="price-highlight" id="displayPrice">R$ 0,00</span>
+        </div>
+
+        <!-- PACOTES RÁPIDOS -->
+        <div class="packages-grid">
+            <button class="pkg-btn" onclick="addPkg(1)"><span>+01</span><span>Selecionar</span></button>
+            <button class="pkg-btn" onclick="addPkg(2)"><span>+02</span><span>Selecionar</span></button>
+            <button class="pkg-btn popular" onclick="addPkg(3)"><span>+03</span><span>Selecionar</span></button>
+            <button class="pkg-btn" onclick="addPkg(5)"><span>+05</span><span>Selecionar</span></button>
+            <button class="pkg-btn" onclick="addPkg(10)"><span>+10</span><span>Selecionar</span></button>
+            <button class="pkg-btn" onclick="addPkg(15)"><span>+15</span><span>Selecionar</span></button>
+        </div>
+
+        <!-- CONTADOR MANUAL -->
+        <div class="manual-counter">
+            <button class="counter-btn" onclick="changeCount(-1)">−</button>
+            <span class="counter-val" id="countDisplay">0</span>
+            <button class="counter-btn" onclick="changeCount(1)">+</button>
+        </div>
+
+        <div class="rules-toggle" onclick="alert('Aqui entraria o texto do regulamento completo.')"> Descrição / Regulamento</div>
+    </div>
+
+    <!-- FOOTER FIXO -->
+    <div class="sticky-footer">
+        <button class="checkout-btn" onclick="finalizarCompra()">GARANTIR NÚMEROS </button>
+        <div class="total-info">
+            <div class="unit-price" id="unitLabel">R$ 0,00/un</div>
+            <div class="total-price" id="totalLabel">R$ 0,00</div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÕES GERAIS
+        const SEU_WHATSAPP = "5511999999999"; // TROQUE PELO SEU NÚMERO
+        
+        // CARREGAR DADOS DA ÚLTIMA RIFA SALVA (Do gerador)
+        let rifas = JSON.parse(localStorage.getItem('rifas')) || [];
+        // Pega a última rifa criada como exemplo. Na versão final, isso viria da URL
+        let rifaAtual = rifas.length > 0 ? rifas[rifas.length - 1] : {
+            titulo: "Rifa Exemplo", imagem: "https://via.placeholder.com/600x300", preco: "10,00", total: 100
+        };
+
+        let quantidade = 0;
+        let precoUnitario = parseFloat(rifaAtual.preco.replace('R$', '').replace('.', '').replace(',', '.')) || 0;
+
+        // INICIALIZAR TELA
+        document.getElementById('rifaTitle').innerText = rifaAtual.titulo.toUpperCase();
+        document.getElementById('heroImg').src = rifaAtual.imagem;
+        document.getElementById('displayPrice').innerText = `R$ ${rifaAtual.preco}`;
+        document.getElementById('unitLabel').innerText = `R$ ${rifaAtual.preco}/un`;
+        document.getElementById('prizeList').innerText = `Total de ${rifaAtual.total} números disponíveis`;
+
+        function updateUI() {
+            document.getElementById('countDisplay').innerText = quantidade;
+            let total = (quantidade * precoUnitario).toFixed(2).replace('.', ',');
+            document.getElementById('totalLabel').innerText = `R$ ${total}`;
+        }
+
+        function addPkg(qtd) {
+            quantidade += qtd;
+            updateUI();
+        }
+
+        function changeCount(delta) {
+            if (quantidade + delta >= 0) {
+                quantidade += delta;
+                updateUI();
+            }
+        }
+
+        function finalizarCompra() {
+            if (quantidade === 0) {
+                alert("Por favor, selecione pelo menos 1 número!");
+                return;
+            }
+            
+            let total = (quantidade * precoUnitario).toFixed(2).replace('.', ',');
+            let msg = `Olá! Quero garantir *${quantidade} números* na rifa *${rifaAtual.titulo}*.\n💰 Total: R$ ${total}\n\nAguardo instruções de pagamento.`;
+            
+            window.open(`https://wa.me/${SEU_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
