@@ -1,1 +1,106 @@
- 
+DOCTYPE html>
+<html lang="pt-br">
+<head>inde.html
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIFA DO GÊMEOS - Escolha seus Números</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+body{background:#f4f6f9;padding-bottom:100px}
+.hero{position:relative;height:250px;overflow:hidden;background:#003366}
+.hero img{width:100%;height:100%;object-fit:cover}
+.hero-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);padding:20px;color:#fff}
+.edition-tag{background:#003366;padding:4px 10px;border-radius:4px;font-size:12px;display:inline-block;margin-bottom:8px}
+.prize-list{font-size:13px;opacity:.9;line-height:1.4;margin-top:5px}
+.container{max-width:600px;margin:0 auto;padding:20px}
+.price-box{text-align:center;margin-bottom:20px;font-size:18px;color:#333}
+.price-highlight{background:#003366;color:#fff;padding:5px 15px;border-radius:20px;font-weight:bold;margin-left:10px}
+.packages-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.pkg-btn{background:#003366;color:#fff;border:none;padding:15px 5px;border-radius:8px;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center}
+.pkg-btn.popular{background:#28a745;position:relative}
+.pkg-btn.popular:after{content:'POPULAR';position:absolute;top:-8px;right:5px;background:#ffc107;color:#000;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:bold}
+.pkg-btn span:first-child{font-size:20px;font-weight:bold}
+.pkg-btn span:last-child{font-size:11px;opacity:.8;margin-top:4px}
+.pkg-btn:active{transform:scale(.95)}
+.manual-counter{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:10px;border-radius:8px;border:1px solid #ddd;margin-bottom:20px}
+.counter-btn{background:none;border:none;font-size:30px;color:#003366;padding:0 20px;cursor:pointer}
+.counter-val{font-size:20px;font-weight:bold;width:50px;text-align:center}
+.sticky-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:15px 20px;box-shadow:0 -4px 10px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;z-index:100}
+.checkout-btn{background:#28a745;color:#fff;border:none;padding:15px;border-radius:8px;font-size:16px;font-weight:bold;flex-grow:1;margin-right:15px;cursor:pointer}
+.total-info{text-align:right;min-width:90px}
+.total-price{font-size:18px;font-weight:bold;color:#333}
+.unit-price{font-size:12px;color:#666}
+.rules-toggle{text-align:center;margin:20px 0;color:#003366;cursor:pointer;text-decoration:underline}
+.info-box{background:#fff;border-radius:10px;padding:15px;margin-top:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);line-height:1.5;color:#444}
+@media(max-width:420px){.packages-grid{gap:7px}.pkg-btn{padding:13px 3px}.sticky-footer{padding:12px}.checkout-btn{font-size:14px;margin-right:10px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<img id="heroImg" src="https://via.placeholder.com/600x300/003366/ffffff?text=RIFA+DO+G%C3%8AMEOS" alt="Rifa do Gêmeos">
+<div class="hero-overlay">
+<span class="edition-tag">EDIÇÃO 001</span>
+<h2 id="rifaTitle">RIFA DO GÊMEOS</h2>
+<p class="prize-list" id="prizeList">Escolha seus números e participe!</p>
+</div>
+</div>
+
+<div class="container">
+<div class="price-box">
+Por apenas <span class="price-highlight" id="displayPrice">R$ 5,00</span>
+</div>
+
+<div class="packages-grid">
+<button class="pkg-btn" onclick="addPkg(1)"><span>+01</span><span>Selecionar</span></button>
+<button class="pkg-btn" onclick="addPkg(2)"><span>+02</span><span>Selecionar</span></button>
+<button class="pkg-btn popular" onclick="addPkg(3)"><span>+03</span><span>Selecionar</span></button>
+<button class="pkg-btn" onclick="addPkg(5)"><span>+05</span><span>Selecionar</span></button>
+<button class="pkg-btn" onclick="addPkg(10)"><span>+10</span><span>Selecionar</span></button>
+<button class="pkg-btn" onclick="addPkg(15)"><span>+15</span><span>Selecionar</span></button>
+</div>
+
+<div class="manual-counter">
+<button class="counter-btn" onclick="changeCount(-1)">−</button>
+<span class="counter-val" id="countDisplay">0</span>
+<button class="counter-btn" onclick="changeCount(1)">+</button>
+</div>
+
+<div class="info-box">
+<strong>RIFA DO GÊMEOS</strong><br>
+Escolha a quantidade de números que deseja participar. O valor será calculado automaticamente.
+</div>
+
+<div class="rules-toggle" onclick="mostrarRegulamento()">Descrição / Regulamento</div>
+</div>
+
+<div class="sticky-footer">
+<button class="checkout-btn" onclick="finalizarCompra()">GARANTIR NÚMEROS</button>
+<div class="total-info">
+<div class="unit-price" id="unitLabel">R$ 5,00/un</div>
+<div class="total-price" id="totalLabel">R$ 0,00</div>
+</div>
+</div>
+
+<script>
+/* ================= CONFIGURAÇÕES ================= */
+const SEU_WHATSAPP = "5511999999999"; // TROQUE PELO SEU WHATSAPP
+const PRECO_UNITARIO = 5.00;
+const TOTAL_NUMEROS = 100;
+
+/* ================= ESTADO ================= */
+let quantidade = 0;
+
+function dinheiro(valor){
+    return valor.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+
+document.getElementById('rifaTitle').innerText = 'RIFA DO GÊMEOS';
+document.getElementById('displayPrice').innerText = dinheiro(PRECO_UNITARIO);
+document.getElementById('unitLabel').innerText = dinheiro(PRECO_UNITARIO) + '/un';
+document.getElementById('prizeList').innerText = `Total de ${TOTAL_NUMEROS} números disponíveis`;
+
+function updateUI(){
+    document.getElementById('countDisplay').innerText = quantidade;
+    document.getElementById('totalLabel').innerText = dinheiro(quantidade * PRECO_UNITARIO);
+} 
